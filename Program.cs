@@ -1,33 +1,26 @@
 ﻿using DMScreen;
 
 var run = true;
-var spells = Helpers.GetSpells();
-if (spells is null)
+var setupDone = SharedState.Setup();
+if (!setupDone)
 {
     Environment.Exit(1);
 }
-var mode = Modes.Normal;
-var input = "";
-var spellSearch = new SpellSearch();
 
-Console.WriteLine($"{ModesHelpers.GetFriendlyMode(mode)} > {input}");
-Console.SetCursorPosition(input.Length + 4, 0);
+Console.WriteLine($"{ModesHelpers.GetFriendlyMode(SharedState.Mode)} > {SharedState.Input}");
+Console.SetCursorPosition(SharedState.Input.Length + 4, 0);
 while (run)
 {
     var key = Console.ReadKey();
-    if (mode == Modes.Normal)
+    if (SharedState.Mode == Modes.Normal)
     {
         switch (key.KeyChar)
         {
             case 's':
-                mode = Modes.Spells;
-                input = "";
-                Interactions.Reset();
+                SharedState.ToSpellMode();
                 break;
             case 'd':
-                mode = Modes.Dice;
-                input = "";
-                Interactions.Reset();
+                SharedState.ToDiceMode();
                 break;
         }
     }
@@ -35,14 +28,12 @@ while (run)
     {
         if (key.Key == ConsoleKey.Tab)
         {
-            mode = Modes.Normal;
-            input = "";
-            Interactions.Reset();
+            SharedState.ToNormalMode();
         }
         if (key.Key == ConsoleKey.Backspace)
         {
             if (input.Length == 0)
-            {
+            
                 continue;
             }
             input = input[..^1];
